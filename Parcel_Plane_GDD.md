@@ -116,8 +116,3 @@ Reference mood: clean low-poly city rooftops at golden hour, paper planes with v
 - No paid assets required for Must-have scope.  
 
 **Scope Honesty:** The Must-have version is a single playable rooftop with one fold type, basic flight physics, and one target. Everything else is layered on top.
-
----
-
-*Word count (body): ~780 words*  
-*This document is intended to be specific enough that another developer could begin implementing the core loop immediately.*

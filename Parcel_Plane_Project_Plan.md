@@ -4,14 +4,6 @@
 **Project Name:** Parcel Plane Development  
 **Created:** November 4, 2026  
 
-Use the example board at https://github.com/jcallinan/CIST1422-Example-Project-Plan (Projects tab) as the model.  
-Create a GitHub Project with **Board** view (Todo / In Progress / Done) and **Roadmap** view.  
-Add custom fields:  
-- **Scope** (Single select): Must have | Should have | Nice to have  
-- **Estimate (hrs)** (Number)  
-- **Target date** (Date)  
-
-Make the project visible to your instructor.
 
 ## Milestones (create under Issues → Milestones)
 
@@ -22,9 +14,6 @@ Make the project visible to your instructor.
 | Beta | Dec 10, 2026 | Content complete, major bugs fixed, playable start-to-finish |
 | Final Build | Dec 15, 2026 | Polished, documented, ready for submission |
 
-## Issues (create one issue per task, assign to milestone, set Scope + Estimate)
-
-### Must Have (Minimum Playable Game)
 
 **Issue: Basic Paper Plane Rigidbody Setup**  
 Milestone: Prototype  
@@ -212,10 +201,3 @@ Decision Date: Nov 15, 2026
 4. Enable Board view (Todo / In Progress / Done) and Roadmap view.  
 5. Make the project visible to the instructor.  
 6. Submit the project link + screenshot of the Board view.  
-
-Keep cards moving throughout the semester and close issues from commits (`Closes #12`).
-
----
-
-**Total Estimated Hours (Must + Should):** ~45–50 hrs (realistic for a solo student over ~6 weeks).  
-Must-have only is a complete, playable game.
