@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e8273b0055154142a57c8db45718f9f, type: 3}
+  m_Name: PV-Stunt_Man
+  m_EditorClassIdentifier: 
+  displayName: Stunts
+  description: Balanced paper plane.
+  mass: 0.35
+  liftCoefficient: 1
+  dragCoefficient: 0.55
+  angularDamping: 0.6
+  climbBias: 0
+  directionalStability: 0.8
+  controlAuthority: 14
+  stallAngle: 35
+  launchPowerMultiplier: 1
