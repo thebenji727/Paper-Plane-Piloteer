@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Glide
   description: Balanced paper plane.
-  mass: 0.4
-  liftCoefficient: 2.1
-  dragCoefficient: 0.18
-  angularDamping: 2
-  climbBias: 0.3
-  directionalStability: 3
-  controlAuthority: 6
-  stallAngle: 28
-  launchPowerMultiplier: 1
+  mass: 3
+  liftCoefficient: 1.5
+  dragCoefficient: 0.5
+  angularDamping: 3
+  climbBias: 1
+  directionalStability: 1
+  controlAuthority: 1
+  stallAngle: 1
+  launchPowerMultiplier: 3

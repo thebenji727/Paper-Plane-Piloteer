@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Dart
   description: Balanced paper plane.
-  mass: 1.5
-  liftCoefficient: 0.25
-  dragCoefficient: 0.2
-  angularDamping: 5
-  climbBias: -20
-  directionalStability: 4
-  controlAuthority: 4
-  stallAngle: 15
-  launchPowerMultiplier: 5
+  mass: 5
+  liftCoefficient: 1
+  dragCoefficient: 1
+  angularDamping: 1
+  climbBias: 1
+  directionalStability: 1
+  controlAuthority: 1
+  stallAngle: 1
+  launchPowerMultiplier: 10
