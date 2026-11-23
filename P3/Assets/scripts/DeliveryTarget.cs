@@ -2,10 +2,8 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// Attach to any GameObject that has a Collider set as a Trigger.
-/// When a PaperPlaneController enters the volume, it registers a successful delivery
-/// and calculates a score based on landing softness (lower speed = higher score).
-///
+/// Detects when a paper plane successfully delivers.
+/// Uses both trigger collision and a proximity fallback so it works even if colliders don't overlap perfectly.
 /// Compatible with Unity 2022.3+.
 /// </summary>
 [RequireComponent(typeof(Collider))]
@@ -20,29 +18,24 @@ public class DeliveryTarget : MonoBehaviour
     }
 
     [Header("Zone")]
-    [Tooltip("What kind of landing zone this is (affects base score)")]
     public ZoneType zoneType = ZoneType.Doormat;
-
-    [Tooltip("Override the base score from the zone type if you want a custom value")]
     public bool useCustomBaseScore = false;
     public int customBaseScore = 100;
 
     [Header("Scoring")]
-    [Tooltip("Speed at or below this counts as a perfect soft landing")]
     public float perfectSoftSpeed = 3f;
-
-    [Tooltip("Speed at or above this counts as a hard crash (minimum score multiplier)")]
     public float hardCrashSpeed = 12f;
 
-    [Header("Events & Feedback")]
-    [Tooltip("Invoked when a plane successfully delivers. Passes the final score.")]
-    public UnityEvent<int> onDelivery;
+    [Header("Detection")]
+    [Tooltip("Also count as delivered if the plane gets this close and is moving slowly")]
+    public float proximityRadius = 8f;
+    public float proximityMaxSpeed = 6f;
 
-    [Tooltip("Optional: a particle system or other effect to play on delivery")]
+    [Header("Events & Feedback")]
+    public UnityEvent<int> onDelivery;
     public ParticleSystem deliveryEffect;
 
     [Header("Plane Handling")]
-    [Tooltip("If true, the plane's Rigidbody is made kinematic after a short delay so it settles")]
     public bool freezePlaneAfterDelivery = true;
     public float freezeDelay = 1.2f;
 
@@ -55,7 +48,7 @@ public class DeliveryTarget : MonoBehaviour
     void Awake()
     {
         zoneCollider = GetComponent<Collider>();
-        if (!zoneCollider.isTrigger)
+        if (zoneCollider != null && !zoneCollider.isTrigger)
         {
             Debug.LogWarning($"{name}: DeliveryTarget collider is not a Trigger. Forcing isTrigger = true.", this);
             zoneCollider.isTrigger = true;
@@ -63,6 +56,42 @@ public class DeliveryTarget : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other)
+    {
+        TryDeliver(other);
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        TryDeliver(other);
+    }
+
+    void Update()
+    {
+        if (alreadyDelivered) return;
+
+        // Proximity fallback — catches cases where the visual zone is big but the collider is small
+        var planes = FindObjectsOfType<PaperPlaneController>();
+        foreach (var plane in planes)
+        {
+            if (plane == null) continue;
+
+            float dist = Vector3.Distance(transform.position, plane.transform.position);
+            Rigidbody rb = plane.GetComponent<Rigidbody>();
+            float speed = rb != null ? rb.velocity.magnitude : 0f;
+
+            if (dist <= proximityRadius && speed <= proximityMaxSpeed)
+            {
+                if (showDebugLog)
+                    Debug.Log($"[DeliveryTarget] Proximity delivery! Distance: {dist:F1} Speed: {speed:F1}", this);
+
+                alreadyDelivered = true;
+                HandleDelivery(plane);
+                break;
+            }
+        }
+    }
+
+    void TryDeliver(Collider other)
     {
         if (alreadyDelivered) return;
 
@@ -79,14 +108,10 @@ public class DeliveryTarget : MonoBehaviour
         float speed = rb != null ? rb.velocity.magnitude : 0f;
 
         int baseScore = useCustomBaseScore ? customBaseScore : (int)zoneType;
-
-        // Softness: 1.0 at perfectSoftSpeed or below, 0.0 at hardCrashSpeed or above
         float softness = 1f - Mathf.InverseLerp(perfectSoftSpeed, hardCrashSpeed, speed);
         softness = Mathf.Clamp01(softness);
 
-        // Final score: base * (0.5 + 0.5 * softness) so even a hard landing still scores something
         int finalScore = Mathf.RoundToInt(baseScore * (0.5f + 0.5f * softness));
-
         int stars = softness > 0.75f ? 3 : softness > 0.4f ? 2 : 1;
 
         if (showDebugLog)
@@ -95,7 +120,6 @@ public class DeliveryTarget : MonoBehaviour
                       $"Speed: {speed:F1} | Softness: {softness:P0} | Score: {finalScore} | Stars: {stars}", this);
         }
 
-        // Fire event so other systems (UI, progression, sound) can react
         onDelivery?.Invoke(finalScore);
 
         if (deliveryEffect != null)
@@ -116,7 +140,11 @@ public class DeliveryTarget : MonoBehaviour
         }
     }
 
-    // Visual aid in the Scene view
+    public void ResetTarget()
+    {
+        alreadyDelivered = false;
+    }
+
     void OnDrawGizmos()
     {
         Collider col = GetComponent<Collider>();
@@ -129,29 +157,5 @@ public class DeliveryTarget : MonoBehaviour
             Gizmos.DrawCube(box.center, box.size);
         else if (col is SphereCollider sphere)
             Gizmos.DrawSphere(sphere.center, sphere.radius);
-        else
-            Gizmos.DrawCube(Vector3.zero, Vector3.one); // fallback
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Collider col = GetComponent<Collider>();
-        if (col == null) return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.matrix = transform.localToWorldMatrix;
-
-        if (col is BoxCollider box)
-            Gizmos.DrawWireCube(box.center, box.size);
-        else if (col is SphereCollider sphere)
-            Gizmos.DrawWireSphere(sphere.center, sphere.radius);
-    }
-
-    /// <summary>
-    /// Call this if you want to reuse the same target for another attempt (e.g. after reset).
-    /// </summary>
-    public void ResetTarget()
-    {
-        alreadyDelivered = false;
     }
 }

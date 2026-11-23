@@ -48,11 +48,17 @@ public class DeliveryDistanceUI : MonoBehaviour
 
         if (deliveryZone == null)
         {
-            var randomizer = FindObjectOfType<RandomizeDeliveryZone>();
-            if (randomizer != null && randomizer.deliveryZone != null)
-                deliveryZone = randomizer.deliveryZone;
+            // Prefer an actual DeliveryTarget if one exists
+            var target = FindObjectOfType<DeliveryTarget>();
+            if (target != null)
+                deliveryZone = target.transform;
             else
-                deliveryZone = FindObjectOfType<DeliveryTarget>()?.transform;
+            {
+                // Fallback: look for a GameObject named DeliveryZone
+                var zoneObj = GameObject.Find("DeliveryZone");
+                if (zoneObj != null)
+                    deliveryZone = zoneObj.transform;
+            }
         }
 
         RefreshPlane();
